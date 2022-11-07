@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from rest_framework .views import Response
 
 
 def get_response(data=None, message="", status=200):
@@ -6,7 +6,7 @@ def get_response(data=None, message="", status=200):
         raise TypeError("data should be a dictionary")
     if data is None:
         data = {}
-    message_dict = {200: "OK", 201: "Created", 405: "Method not allowed", 406: "invalid credentials"}
+    message_dict = {200: "OK", 201: "Created", 202: "Accepted", 405: "Method not allowed", 406: "invalid credentials"}
     if message == "":
         message = message_dict.get(status)
-    return JsonResponse({"data": data, "message": message, "status": status}, status=status)
+    return Response({"data": data, "message": message, "status": status}, status=status)

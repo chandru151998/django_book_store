@@ -1,43 +1,39 @@
-import json
 import logging
-from django.contrib.auth import authenticate
-from django.forms import model_to_dict
-from .models import User
+from django.contrib.auth import authenticate, login
+from .serializers import RegistrationSerializer
+from rest_framework.views import APIView
 from .utils import get_response
 
-logging.basicConfig(filename='file.log', filemode='w', level=logging.DEBUG)
+logging.basicConfig(filename='book_store.log', encoding='utf-8', level=logging.DEBUG,
+                    format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
-def register_user(request):
-    """Function to register user details"""
-    try:
-        data = json.loads(request.body)
-        if request.method == 'POST':
-            user = User.objects.create_user(username=data.get('username'), password=data.get('password'),
-                                            first_name=data.get('first_name'), last_name=data.get('last_name'),
-                                            email=data.get('email'), phone_no=data.get('phone_no'),
-                                            location=data.get('location'))
-            return get_response(data=model_to_dict(user, exclude=("password",)), status=201)
-        return get_response(status=405)
+class UserRegistration(APIView):
+    """Class to register the user"""
+    def post(self, request):
+        """Method to register the user"""
+        try:
+            serializer = RegistrationSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return get_response(data=serializer.data, status=201)
 
-    except Exception as e:
-        logging.exception(e)
-        return get_response(message=str(e), status=400)
+        except Exception as e:
+            logging.exception(e)
+            return get_response(message=str(e), status=400)
 
 
-def login_user(request):
-    """Function to login the user"""
-    try:
-        data = json.loads(request.body)
-        if request.method == "POST":
-            user = authenticate(username=data.get('username'), password=data.get('password'))
+class UserLogin(APIView):
+    """Class to login the user"""
+    def post(self, request):
+        """Method to login the user"""
+        try:
+            user = authenticate(**request.data)
             if user is not None:
-                return get_response(data={'first_name': user.first_name, 'last_name': user.last_name,
-                                          'email': user.email, 'phone_no': user.phone_no, 'location': user.location},
-                                    message="login successful", status=200)
+                login(request, user)
+                return get_response(message='Login Successful', status=202)
             return get_response(status=406)
-        return get_response(status=405)
 
-    except Exception as e:
-        logging.exception(e)
-        return get_response(message=str(e), status=400)
+        except Exception as e:
+            logging.exception(e)
+            return get_response(message=str(e), status=400)
