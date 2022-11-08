@@ -3,7 +3,7 @@ from .serializers import RegistrationSerializer, LoginSerializer
 from rest_framework.views import APIView
 from .utils import get_response
 
-logging.basicConfig(filename='book_store.log', encoding='utf-8', level=logging.DEBUG,
+logging.basicConfig(filename='user.log', encoding='utf-8', level=logging.DEBUG,
                     format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
