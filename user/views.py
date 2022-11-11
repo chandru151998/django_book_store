@@ -1,10 +1,13 @@
 import logging
+from django.conf import settings
+from django.core.mail import send_mail
+from .models import User
 from .serializers import RegistrationSerializer, LoginSerializer
 from rest_framework.views import APIView
-from .utils import get_response
+from .utils import get_response, JWT
+from rest_framework.reverse import reverse
 
-logging.basicConfig(filename='user.log', encoding='utf-8', level=logging.DEBUG,
-                    format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename='book_store.log', encoding='utf-8', level=logging.DEBUG)
 
 
 class UserRegistration(APIView):
@@ -16,6 +19,13 @@ class UserRegistration(APIView):
             serializer = RegistrationSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            token = JWT().encode(data={"username": serializer.data.get("username")})
+            send_mail(
+                subject='Verify token',
+                message=settings.BASE_URL + reverse('verify_token', kwargs={"token": token}),
+                from_email=None,
+                recipient_list=[serializer.data.get("email")],
+            )
             return get_response(data=serializer.data, status=201)
         except Exception as e:
             logging.exception(e)
@@ -31,7 +41,30 @@ class UserLogin(APIView):
             serializer = LoginSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return get_response(message='Login Successful', status=202)
+            token = JWT().encode({"user_id": serializer.data.get("id")})
+            return get_response(data=token, message='Login Successful', status=202)
         except Exception as e:
             logging.exception(e)
             return get_response(message=str(e), status=400)
+
+
+class VerifyToken(APIView):
+    def get(self, request, token=None):
+        try:
+            decoded = JWT().decode(token)
+            user = User.objects.get(username=decoded.get("username"))
+            if not user:
+                raise Exception("Invalid user")
+            user.is_verified = True
+            user.save()
+            return get_response(message="Token verified")
+        except Exception as e:
+            logging.exception(e)
+            return get_response(message=str(e), status=400)
+
+
+#decode token frm header
+#validity user
+#
+#is_superuser key tru/not
+#if not raise exc
