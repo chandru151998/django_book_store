@@ -54,4 +54,3 @@ class BookAPI(APIView):
         except Exception as e:
             logging.exception(e)
             return get_response(message=str(e), status=400)
-        
