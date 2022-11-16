@@ -7,10 +7,18 @@ class Cart(models.Model):
     status = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+
     @property
     def total_price(self):
         price = sum([item.price for item in self.cartitem_set.all()])
         return price
+
+    @property
+    def cartitem(self):
+        try:
+            return self.cartitem_set.all()
+        except Exception:
+            return []
 
 
 class CartItem(models.Model):

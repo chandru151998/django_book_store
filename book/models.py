@@ -6,5 +6,5 @@ class Book(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
     price = models.IntegerField()
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
