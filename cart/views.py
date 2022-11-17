@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
 from user.utils import get_response, verify_user_token
 from .models import Cart
@@ -8,6 +9,7 @@ logging.basicConfig(filename='book_store.log', encoding='utf-8', level=logging.D
 
 
 class CartView(APIView):
+    @swagger_auto_schema(request_body=CartSerializer, responses={201: 'Created', 400: 'BAD REQUEST'})
     @verify_user_token
     def post(self, request):
         """Function to create cart"""
@@ -31,6 +33,7 @@ class CartView(APIView):
             logging.exception(e)
             return get_response(message=str(e), status=400)
 
+    @swagger_auto_schema(request_body=CartSerializer, responses={204: 'Deleted', 400: 'BAD REQUEST'})
     @verify_user_token
     def delete(self, request):
         """Function to delete the cart"""
@@ -44,6 +47,7 @@ class CartView(APIView):
 
 
 class CheckoutAPI(APIView):
+    @swagger_auto_schema(request_body=CartSerializer, responses={200: 'OK', 400: 'BAD REQUEST'})
     @verify_user_token
     def put(self, request):
         """method to update the purchase status of the user"""

@@ -1,4 +1,5 @@
 import logging
+from drf_yasg.utils import swagger_auto_schema
 from .models import Book
 from rest_framework.views import APIView
 from book.serializers import BookSerializer
@@ -9,6 +10,7 @@ logging.basicConfig(filename='book_store.log', encoding='utf-8', level=logging.D
 
 class BookAPI(APIView):
     """Class to add, update, delete and view the books"""
+    @swagger_auto_schema(request_body=BookSerializer, responses={201: 'Created', 400: 'BAD REQUEST'})
     @verify_superuser_token
     def post(self, request):
         """Function to add book"""
@@ -21,6 +23,7 @@ class BookAPI(APIView):
             logging.exception(e)
             return get_response(message=str(e), status=400)
 
+    @swagger_auto_schema(responses={200: 'Books list', 400: 'BAD REQUEST'})
     def get(self, request):
         """Function to view all books"""
         try:
@@ -31,6 +34,7 @@ class BookAPI(APIView):
             logging.exception(e)
             return get_response(message=str(e), status=400)
 
+    @swagger_auto_schema(request_body=BookSerializer, responses={201: 'Book updated', 400: 'BAD REQUEST'})
     @verify_superuser_token
     def put(self, request):
         """Function to update book details"""
@@ -44,6 +48,7 @@ class BookAPI(APIView):
             logging.exception(e)
             return get_response(message=str(e), status=400)
 
+    @swagger_auto_schema(request_body=BookSerializer, responses={204: 'Book deleted', 400: 'BAD REQUEST'})
     @verify_superuser_token
     def delete(self, request):
         """Function to delete a book"""

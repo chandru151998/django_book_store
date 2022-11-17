@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from drf_yasg import openapi
 from rest_framework import serializers
 from .models import User
 
@@ -13,6 +14,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'phone_no', 'location']
         extra_kwargs = {'password': {'write_only': True}}
         read_only_fields = ['id']
+        swagger_schema_fields = {"required": ['username', 'password'], "type": openapi.TYPE_OBJECT,
+                                 "properties": {
+                                     "username": openapi.Schema(
+                                         title="username",
+                                         type=openapi.TYPE_STRING,
+                                     ),
+                                     "password": openapi.Schema(
+                                         title="password",
+                                         type=openapi.TYPE_STRING,
+                                     )
+                                 }}
 
 
 class LoginSerializer(serializers.Serializer):

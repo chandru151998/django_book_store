@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'user',
     'book',
     'cart',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -142,3 +143,14 @@ BASE_URL = 'http://127.0.0.1:8000'
 
 JWT_SECRET = 'abcd'
 JWT_ALGORITHMS = 'HS256'
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Token',
+            'in': 'header'
+        }
+    }
+}

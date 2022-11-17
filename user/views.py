@@ -1,6 +1,8 @@
 import logging
 from django.conf import settings
 from django.core.mail import send_mail
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from .models import User
 from .serializers import RegistrationSerializer, LoginSerializer
 from rest_framework.views import APIView
@@ -13,6 +15,7 @@ logging.basicConfig(filename='book_store.log', encoding='utf-8', level=logging.D
 class UserRegistration(APIView):
     """Class to register the user"""
 
+    @swagger_auto_schema(request_body=RegistrationSerializer, responses={201: 'Created', 400: 'BAD REQUEST'})
     def post(self, request):
         """Method to register the user"""
         try:
@@ -35,6 +38,7 @@ class UserRegistration(APIView):
 class UserLogin(APIView):
     """Class to login the user"""
 
+    @swagger_auto_schema(request_body=LoginSerializer, responses={202: 'Login Successful', 400: 'BAD REQUEST'})
     def post(self, request):
         """Method to login the user"""
         try:
@@ -61,10 +65,3 @@ class VerifyToken(APIView):
         except Exception as e:
             logging.exception(e)
             return get_response(message=str(e), status=400)
-
-
-#decode token frm header
-#validity user
-#
-#is_superuser key tru/not
-#if not raise exc
