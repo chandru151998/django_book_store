@@ -36,6 +36,6 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(**validated_data)
         if not user:
             raise Exception('Invalid credentials')
-        if user.is_verified:
+        if not user.is_verified:
             raise Exception("User not verified")
         return user
