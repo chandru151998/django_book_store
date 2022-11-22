@@ -27,7 +27,7 @@ class CartSerializer(serializers.ModelSerializer):
         user = validated_data.get('user')
         cart_list = Cart.objects.filter(user_id=user.id, status=False)
         if len(cart_list) == 0:
-            cart = Cart.objects.create(user_id=user)
+            cart = Cart.objects.create(user_id=user.id)
         else:
             cart = cart_list.first()
         for book_dict in validated_data.get('books'):
